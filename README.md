@@ -15,7 +15,7 @@ This solution provides a **Production-Grade Bulk Reassignment and Department Han
 
 1. **High-Performance Chunked Batch Processing**:
    - Updates hundreds of appointments in async chunks (50-100 per chunk) to avoid database locks and deadlocks.
-2. **Safety & Concurrency Safeguards ("किन चीजों का ध्यान रखा गया है")**:
+2. **Safety & Concurrency Safeguards**:
    - **Active Call Protection**: Automatically excludes appointments currently in live phone calls (`call_status = 'IN_PROGRESS'`).
    - **Optimistic Concurrency & Row Locking**: Prevents race conditions from simultaneous supervisor updates.
    - **Status & Date Filters**: Option to exclude cancelled/completed appointments or select specific appointment checkboxes.
