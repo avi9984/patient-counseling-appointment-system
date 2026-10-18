@@ -1,0 +1,31 @@
+{
+  "name": "patient-counseling-appointment-system",
+  "version": "1.0.0",
+  "description": "Enterprise Bulk Appointment Reassignment System for Patient Counseling CRM (Node.js)",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "seed": "node src/utils/seedData.js"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "bulk-reassignment",
+    "appointment-management",
+    "crm",
+    "counseling",
+    "batch-processing"
+  ],
+  "author": "Node.js Backend Developer",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "morgan": "^1.10.0",
+    "socket.io": "^4.8.1",
+    "sqlite3": "^5.1.7",
+    "uuid": "^11.1.0"
+  }
+}
