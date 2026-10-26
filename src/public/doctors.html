@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZenOnco.io - Doctor Admin Portal (Redesigned)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/doctors.css">
+</head>
+<body class="doctor-portal-body">
+  <!-- Top Global Task Switcher Bar -->
+  <div class="global-task-bar">
+    <div class="task-switcher-brand">
+      <span class="brand-logo">🌿</span>
+      <strong>ZenOnco.io Product Suite</strong>
+    </div>
+    <div class="task-tabs-nav">
+      <a href="/" class="task-nav-link">
+        📋 Task 1: Patient Counseling (Bulk Reassign)
+      </a>
+      <a href="/doctors" class="task-nav-link active">
+        🩺 Task 2: Doctor Admin Redesign
+      </a>
+    </div>
+    <div class="admin-badge-user">
+      <span class="status-dot"></span> Admin Superuser
+    </div>
+  </div>
+
+  <div class="portal-layout">
+    <!-- Modern Sidebar Navigation (from drapp.zenonco.io) -->
+    <aside class="sidebar-nav">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="logo-icon">Z</div>
+          <div>
+            <span class="logo-title">ZenOnco</span>
+            <span class="logo-sub">Doctor Network</span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-menu">
+        <div class="menu-category">MAIN MENU</div>
+        <a href="#" class="nav-item"><span class="icon">📊</span> Dashboard</a>
+        <a href="#" class="nav-item active"><span class="icon">🩺</span> Doctors</a>
+        <a href="#" class="nav-item"><span class="icon">🏆</span> Leaderboard</a>
+        <a href="#" class="nav-item"><span class="icon">🤝</span> Referrals</a>
+        <a href="#" class="nav-item"><span class="icon">💬</span> Doctor Feedback</a>
+        <a href="#" class="nav-item"><span class="icon">📚</span> Case Studies</a>
+        <a href="#" class="nav-item"><span class="icon">⭐</span> Testimonials</a>
+        <a href="#" class="nav-item"><span class="icon">🎓</span> Education</a>
+        <a href="#" class="nav-item"><span class="icon">🌐</span> Languages</a>
+        <a href="#" class="nav-item"><span class="icon">🔔</span> Notifications</a>
+
+        <div class="menu-category">ACCOUNT</div>
+        <a href="#" class="nav-item logout-link"><span class="icon">🚪</span> Logout</a>
+      </nav>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="workspace-area">
+      <!-- Top Title & Quick Actions -->
+      <div class="workspace-header">
+        <div>
+          <div class="breadcrumb">drapp.zenonco.io / doctors</div>
+          <h1 class="portal-heading">Doctor Management & Referral Network</h1>
+          <p class="portal-sub">Oversee onboarded oncologists, manage partner profiles, and track doctor referral performance</p>
+        </div>
+        <div class="workspace-actions">
+          <button class="btn btn-outline" id="exportDoctorsBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Export List
+          </button>
+          <button class="btn btn-primary" id="openAddDoctorModalBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            + Onboard New Doctor
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Overview Cards -->
+      <div class="metrics-grid">
+        <div class="stat-card">
+          <div class="stat-icon-wrap bg-blue-soft">🩺</div>
+          <div>
+            <span class="stat-num" id="statTotalDoctors">7</span>
+            <span class="stat-label">Total Onboarded Doctors</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap bg-green-soft">✅</div>
+          <div>
+            <span class="stat-num" id="statActiveDoctors">7</span>
+            <span class="stat-label">Active Doctors</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap bg-purple-soft">👥</div>
+          <div>
+            <span class="stat-num" id="statTotalReferrals">259</span>
+            <span class="stat-label">Total Patients Referred</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap bg-amber-soft">📍</div>
+          <div>
+            <span class="stat-num" id="statCitiesCovered">4</span>
+            <span class="stat-label">Cities Covered</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Referrers Leaderboard Widget (Redesigned from image) -->
+      <div class="card-box mb-4">
+        <div class="card-box-header">
+          <div class="title-with-icon">
+            <span class="icon-badge">🏆</span>
+            <div>
+              <h2 class="card-title">Top Doctor Referrers</h2>
+              <p class="card-desc">Leading medical partners driving patient outreach</p>
+            </div>
+          </div>
+          <span class="tag-pill">Live Leaderboard</span>
+        </div>
+        <div class="referrers-scroll-grid" id="topReferrersGrid">
+          <!-- Populated by doctors.js -->
+        </div>
+      </div>
+
+      <!-- All Doctors Table Section -->
+      <div class="card-box">
+        <div class="card-box-header flex-between">
+          <div class="title-with-icon">
+            <span class="icon-badge">👨‍⚕️</span>
+            <div>
+              <h2 class="card-title">All Registered Doctors</h2>
+              <p class="card-desc">Search, filter, edit details, and inspect comprehensive clinical performance</p>
+            </div>
+          </div>
+          
+          <div class="filter-controls-row">
+            <div class="search-box">
+              <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input type="text" id="doctorSearchInput" placeholder="Search by name, city, mobile, code...">
+            </div>
+
+            <select id="statusFilterSelect" class="form-select filter-select">
+              <option value="ALL">All Statuses</option>
+              <option value="active">Active Only</option>
+              <option value="inactive">Inactive</option>
+            </select>
+
+            <select id="cityFilterSelect" class="form-select filter-select">
+              <option value="ALL">All Cities</option>
+              <option value="Varanasi">Varanasi</option>
+              <option value="Lucknow">Lucknow</option>
+              <option value="Purani bazar jaunpur">Jaunpur</option>
+              <option value="Bhira market Azamgarh">Azamgarh</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="doctors-table">
+            <thead>
+              <tr>
+                <th>DOCTOR NAME & SPECIALIZATION</th>
+                <th>CODE</th>
+                <th>CONTACT & MOBILE</th>
+                <th>HOSPITAL / CLINIC & CITY</th>
+                <th>PATIENTS REFERRED</th>
+                <th>STATUS</th>
+                <th class="text-right">ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody id="doctorsTableBody">
+              <!-- Populated by doctors.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal: Edit Doctor Details -->
+  <div class="modal-backdrop" id="editDoctorModalBackdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <div class="modal-icon-badge">✏️</div>
+          <div>
+            <h2 class="modal-title">Edit Doctor Profile</h2>
+            <p class="modal-subtitle">Update contact details, clinical affiliations, and status</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="closeEditDoctorModalBtn">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <input type="hidden" id="editDoctorId">
+        
+        <div class="form-grid-2">
+          <div>
+            <label class="form-label">Full Name *</label>
+            <input type="text" id="editDoctorName" class="form-input" required>
+          </div>
+          <div>
+            <label class="form-label">Specialization *</label>
+            <input type="text" id="editDoctorSpecialization" class="form-input" placeholder="e.g. Surgical Oncology">
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div>
+            <label class="form-label">Mobile Number *</label>
+            <input type="text" id="editDoctorMobile" class="form-input" required>
+          </div>
+          <div>
+            <label class="form-label">Email Address</label>
+            <input type="email" id="editDoctorEmail" class="form-input">
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div>
+            <label class="form-label">Hospital / Clinic Affiliation</label>
+            <input type="text" id="editDoctorHospital" class="form-input">
+          </div>
+          <div>
+            <label class="form-label">Years of Experience</label>
+            <input type="text" id="editDoctorExperience" class="form-input" placeholder="e.g. 12 years">
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div>
+            <label class="form-label">City *</label>
+            <input type="text" id="editDoctorCity" class="form-input" required>
+          </div>
+          <div>
+            <label class="form-label">Account Status</label>
+            <select id="editDoctorStatus" class="form-select">
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="cancelEditDoctorBtn">Cancel</button>
+        <button class="btn btn-primary" id="saveDoctorChangesBtn">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Side Drawer: View Full Doctor Details & Referral Analytics -->
+  <aside class="detail-drawer" id="doctorViewDrawer">
+    <div class="drawer-header">
+      <div class="drawer-header-left">
+        <div class="doctor-avatar-circle" id="drawerDocAvatar">RP</div>
+        <div>
+          <h2 class="drawer-patient-title" id="drawerDocName">Dr. RP Singh</h2>
+          <span class="drawer-subtitle" id="drawerDocCode">Code: ZH102934 • Varanasi</span>
+        </div>
+      </div>
+      <button class="close-drawer-btn" id="closeDoctorViewDrawerBtn">&rarr;|</button>
+    </div>
+
+    <div class="drawer-body">
+      <!-- Status & Verification Badge -->
+      <div class="doc-badge-row">
+        <span class="status-pill-badge" id="drawerDocStatus">ACTIVE PARTNER</span>
+        <span class="verified-pill">✓ Verified Medical License</span>
+        <span class="rating-pill" id="drawerDocRating">⭐ 4.9 / 5.0</span>
+      </div>
+
+      <!-- Quick Metrics Grid -->
+      <div class="doc-metrics-grid mt-3">
+        <div class="doc-metric-box">
+          <span class="val text-primary" id="drawerDocTotalReferred">50</span>
+          <span class="lbl">Total Referred</span>
+        </div>
+        <div class="doc-metric-box">
+          <span class="val text-success" id="drawerDocActivePatients">18</span>
+          <span class="lbl">Active Under Care</span>
+        </div>
+        <div class="doc-metric-box">
+          <span class="val text-warning" id="drawerDocConsultations">142</span>
+          <span class="lbl">Consultations</span>
+        </div>
+      </div>
+
+      <!-- Detailed Clinical Info -->
+      <div class="doc-info-section mt-4">
+        <h3 class="section-title">CLINICAL & CONTACT DETAILS</h3>
+        
+        <div class="info-list">
+          <div class="info-row">
+            <span class="info-lbl">Specialization:</span>
+            <strong id="drawerDocSpec">Surgical Oncology</strong>
+          </div>
+          <div class="info-row">
+            <span class="info-lbl">Hospital / Clinic:</span>
+            <strong id="drawerDocHospital">Heritage Hospital & Cancer Center</strong>
+          </div>
+          <div class="info-row">
+            <span class="info-lbl">Mobile Phone:</span>
+            <strong id="drawerDocMobile">+91 9876543210</strong>
+          </div>
+          <div class="info-row">
+            <span class="info-lbl">Email Address:</span>
+            <strong id="drawerDocEmail">dr.rpsingh@zenonco.io</strong>
+          </div>
+          <div class="info-row">
+            <span class="info-lbl">Experience:</span>
+            <strong id="drawerDocExp">14 years</strong>
+          </div>
+          <div class="info-row">
+            <span class="info-lbl">Referral Code:</span>
+            <span class="code-tag" id="drawerDocReferralCode">RPS50</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Referred Patients Timeline -->
+      <div class="doc-info-section mt-4">
+        <h3 class="section-title">RECENT REFERRED PATIENTS</h3>
+        <div class="referred-patients-list">
+          <div class="patient-card-item">
+            <div class="patient-avatar">PD</div>
+            <div class="patient-info">
+              <strong>Prabha Devi</strong>
+              <span>Stage II Breast Cancer • Supplements Care</span>
+            </div>
+            <span class="patient-status-tag">Active Care</span>
+          </div>
+          <div class="patient-card-item">
+            <div class="patient-avatar">KP</div>
+            <div class="patient-info">
+              <strong>Kashyap Pandya</strong>
+              <span>Colon Oncology • Onco-Nutrition Follow-up</span>
+            </div>
+            <span class="patient-status-tag">Consultation</span>
+          </div>
+          <div class="patient-card-item">
+            <div class="patient-avatar">KA</div>
+            <div class="patient-info">
+              <strong>Kuldeep Agarwal</strong>
+              <span>Lung Cancer • Integrative Support</span>
+            </div>
+            <span class="patient-status-tag">Delivery</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Drawer Action Buttons -->
+      <div class="drawer-footer-actions mt-4">
+        <button class="btn btn-outline flex-1" id="drawerEditBtn">✏️ Edit Details</button>
+        <button class="btn btn-primary flex-1" id="drawerCallDoctorBtn">📞 Call Doctor</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="/js/doctors.js"></script>
+</body>
+</html>
