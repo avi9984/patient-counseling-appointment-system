@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZenOnco.io - Patient Counseling & Bulk Appointment Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <!-- Top Global Task Switcher Bar -->
+  <div class="global-task-bar">
+    <div class="task-switcher-brand">
+      <span class="brand-logo">🌿</span>
+      <strong>ZenOnco.io Product Suite</strong>
+    </div>
+    <div class="task-tabs-nav">
+      <a href="/" class="task-nav-link active">
+        📋 Task 1: Patient Counseling (Bulk Reassign)
+      </a>
+      <a href="/doctors" class="task-nav-link">
+        🩺 Task 2: Doctor Admin Redesign
+      </a>
+    </div>
+    <div class="admin-badge-user">
+      <span class="status-dot"></span> Admin Superuser
+    </div>
+  </div>
+
+  <!-- Top Navigation Bar -->
+  <header class="top-nav">
+    <div class="nav-left">
+      <button class="icon-btn hamburger-btn" title="Toggle Menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
+      <div class="url-badge">
+        <span class="lock-icon">🔒</span>
+        <span class="url-text">zenonco.io/patient-counseling/appointment-list</span>
+      </div>
+    </div>
+    <div class="nav-right">
+      <button class="nav-btn outline">Search Number</button>
+      <button class="nav-btn outline">Visits</button>
+      <button class="nav-btn outline">Bookings</button>
+      <div class="toggle-container">
+        <span class="toggle-label">On Break</span>
+        <label class="switch">
+          <input type="checkbox" id="onBreakToggle">
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <div class="user-profile">
+        <div class="avatar-header">SS</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="main-container">
+    <!-- Page Header & Action Controls -->
+    <div class="page-header">
+      <div class="header-left">
+        <h1 class="page-title">Appointment List <span class="appt-count" id="totalApptCountBadge">(392 Appt.)</span></h1>
+        <button class="btn btn-outline" id="addRevenueSplitBtn">Add revenue Split</button>
+        <label class="checkbox-label">
+          <input type="checkbox" id="excludeReferralCheckbox" checked>
+          <span>Exclude Referral only</span>
+        </label>
+        <!-- The New Bulk Handover Action Button -->
+        <button class="btn btn-primary bulk-reassign-btn" id="openBulkModalBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
+          Bulk Reassign / Handover
+        </button>
+      </div>
+
+      <div class="header-right">
+        <button class="btn btn-outline filter-btn" id="filterBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+          Filter
+        </button>
+        <button class="btn btn-outline sort-btn" id="sortBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5h10M11 9h7M11 13h4M3 17l3 3 3-3M6 18V4"></path></svg>
+          Sort
+        </button>
+        <div class="search-box">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="searchInput" placeholder="Search by name, number, order ID, etc...">
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Filter Chips / Selection Bar -->
+    <div class="selection-banner" id="selectionBanner" style="display: none;">
+      <span id="selectedCountText">0 appointments selected</span>
+      <div class="banner-actions">
+        <button class="btn btn-sm btn-primary" id="reassignSelectedBtn">Reassign Selected (<span id="selectedBadgeNum">0</span>)</button>
+        <button class="btn btn-sm btn-link" id="clearSelectionBtn">Clear Selection</button>
+      </div>
+    </div>
+
+    <!-- Category Tabs -->
+    <div class="category-tabs">
+      <button class="tab-btn active" data-tab="All">All (<span id="countAll">392</span>)</button>
+      <button class="tab-btn" data-tab="Consultation">Consultation (<span id="countConsultation">0</span>)</button>
+      <button class="tab-btn" data-tab="Delivery">Delivery (<span id="countDelivery">0</span>)</button>
+      <button class="tab-btn" data-tab="Cancelled">Cancelled (<span id="countCancelled">0</span>)</button>
+    </div>
+
+    <!-- Table Section -->
+    <div class="table-container">
+      <table class="appointments-table" id="appointmentsTable">
+        <thead>
+          <tr>
+            <th class="th-checkbox">
+              <input type="checkbox" id="selectAllCheckbox" title="Select all on this page">
+            </th>
+            <th>ASSIGNEE</th>
+            <th>PRIORITY <span class="sort-icon">⇅</span></th>
+            <th>CREATED <span class="sort-icon">⇅</span></th>
+            <th>DUE DATE <span class="sort-icon">⇅</span></th>
+            <th>ORDER ID</th>
+            <th>PATIENT ID</th>
+            <th class="text-center">PATIENT</th>
+            <th class="text-center">POC</th>
+            <th>CONTACT</th>
+            <th>PATIENT</th>
+            <th>COACH</th>
+          </tr>
+        </thead>
+        <tbody id="appointmentsTableBody">
+          <!-- Rows dynamically injected by app.js -->
+        </tbody>
+      </table>
+
+      <!-- Empty / Loading State -->
+      <div class="table-state-message" id="tableLoadingState" style="display: none;">
+        <div class="spinner"></div>
+        <span>Loading appointments...</span>
+      </div>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="pagination-footer">
+      <div class="pagination-info" id="paginationInfo">Showing 1 to 20 of 392 appointments</div>
+      <div class="pagination-buttons">
+        <button class="btn btn-sm btn-outline" id="prevPageBtn" disabled>&larr; Previous</button>
+        <span class="page-num-display" id="pageNumDisplay">Page 1 of 20</span>
+        <button class="btn btn-sm btn-outline" id="nextPageBtn">Next &rarr;</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Right Side Detail Drawer (Slide-out panel for appointment details) -->
+  <aside class="detail-drawer" id="detailDrawer">
+    <div class="drawer-header">
+      <div class="drawer-header-left">
+        <div class="check-circle-icon">✓</div>
+        <div class="order-info">
+          <span class="label">ORDER</span>
+          <span class="order-id-val" id="drawerOrderId">39462</span>
+        </div>
+        <div class="status-pill-badge" id="drawerStatusPill">Order confirmed from partner</div>
+        <div class="next-step-info">
+          <span class="label">NEXT STEPS</span>
+          <span class="next-step-val" id="drawerNextStep">Upload tracking number</span>
+        </div>
+      </div>
+      <div class="drawer-header-right">
+        <button class="icon-action" title="Copy Link">🔗</button>
+        <button class="icon-action" title="Open External">↗</button>
+        <button class="icon-action" title="PDF Export">📄</button>
+        <span class="priority-pill" id="drawerPriority">Medium</span>
+        <button class="close-drawer-btn" id="closeDrawerBtn" title="Close Drawer">&rarr;|</button>
+      </div>
+    </div>
+
+    <div class="drawer-body">
+      <div class="drawer-title-row">
+        <div>
+          <h2 class="drawer-patient-title" id="drawerPatientTitle">prabha devi / Supplements / Medizen Supplements</h2>
+          <span class="drawer-subtitle" id="drawerSubtitle">(Appointment Request)</span>
+        </div>
+        <button class="btn btn-sm btn-outline">+ Add Query</button>
+      </div>
+
+      <!-- Detail Form Grid -->
+      <div class="fields-grid">
+        <div class="field-card">
+          <div class="field-icon user-icon">👤</div>
+          <div class="field-content">
+            <label>ASSIGNEE</label>
+            <select id="drawerAssigneeSelect" class="form-select"></select>
+          </div>
+        </div>
+
+        <div class="field-card">
+          <div class="field-icon date-icon">📅</div>
+          <div class="field-content">
+            <label>DUE DATE</label>
+            <input type="text" id="drawerDueDateInput" class="form-input">
+          </div>
+        </div>
+
+        <div class="field-card">
+          <div class="field-icon coach-icon">👤</div>
+          <div class="field-content">
+            <label>COACH</label>
+            <select id="drawerCoachSelect" class="form-select"></select>
+          </div>
+        </div>
+
+        <div class="field-card">
+          <div class="field-icon ops-icon">👤</div>
+          <div class="field-content">
+            <label>PC OPS</label>
+            <select id="drawerPcOpsSelect" class="form-select"></select>
+          </div>
+        </div>
+
+        <div class="field-card">
+          <div class="field-icon calendar-icon">📅</div>
+          <div class="field-content">
+            <label>CREATED DATE</label>
+            <span class="field-value-text" id="drawerCreatedDate">16 Sep 2026</span>
+          </div>
+        </div>
+
+        <div class="field-card">
+          <div class="field-icon user-icon">👤</div>
+          <div class="field-content">
+            <label>CREATED BY</label>
+            <span class="field-value-text" id="drawerCreatedBy">Sonu Singh</span>
+          </div>
+        </div>
+
+        <div class="field-card">
+          <div class="field-icon money-icon">💵</div>
+          <div class="field-content">
+            <label>REVENUE PC</label>
+            <span class="field-value-action" id="drawerRevenue">Edit (₹2,999)</span>
+          </div>
+        </div>
+
+        <div class="field-card">
+          <div class="field-icon phone-icon">📞</div>
+          <div class="field-content">
+            <label>CALL PATIENT</label>
+            <div class="phone-reveal">
+              <span id="drawerPatientPhone">89XXXXXX78</span>
+              <button class="eye-btn" id="togglePhoneReveal">👁</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact & Services Section -->
+      <div class="contact-services-section">
+        <h3 class="section-title">CONTACT & SERVICES</h3>
+        <div class="call-poc-box">
+          <div class="poc-header">
+            <span class="poc-label">CALL POC</span>
+            <button class="btn-phone-call">📞</button>
+          </div>
+          <div class="poc-info" id="drawerPocInfo">
+            ZenOnco.io Suppl Cancer Care | 9096350273
+          </div>
+        </div>
+      </div>
+
+      <!-- Comments / Notes Action Tabs -->
+      <div class="drawer-action-tabs">
+        <button class="drawer-tab-btn active" id="drawerUpdateTabBtn">Update</button>
+        <button class="drawer-tab-btn" id="drawerNoteTabBtn">Note</button>
+      </div>
+
+      <div class="comment-input-area">
+        <div class="comment-user-avatar">P</div>
+        <input type="text" id="drawerCommentInput" placeholder="Ask a question or post an update...">
+        <button class="btn btn-primary" id="drawerSaveBtn">Update</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Modal: Bulk Reassignment & Department Transfer -->
+  <div class="modal-backdrop" id="bulkModalBackdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <div class="modal-icon-badge">⚡</div>
+          <div>
+            <h2 class="modal-title">Bulk Appointment Reassignment</h2>
+            <p class="modal-subtitle">Transfer appointments seamlessly across counselors or distribute team workload</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="closeBulkModalBtn">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Step 1: Source & Strategy -->
+        <div class="form-section">
+          <div class="section-badge">1</div>
+          <div class="section-body">
+            <label class="form-label">Source Counselor (Whose appointments to transfer)</label>
+            <select id="modalSourceUserSelect" class="form-select modal-select"></select>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="section-badge">2</div>
+          <div class="section-body">
+            <label class="form-label">Reassignment Target Strategy</label>
+            <div class="strategy-cards">
+              <label class="strategy-card active" id="strategyDirectLabel">
+                <input type="radio" name="distributionStrategy" value="DIRECT" checked>
+                <div class="strategy-icon">👤</div>
+                <div class="strategy-info">
+                  <strong>Single Counselor Transfer</strong>
+                  <span>Reassign all selected appointments to one specific person</span>
+                </div>
+              </label>
+
+              <label class="strategy-card" id="strategyRoundRobinLabel">
+                <input type="radio" name="distributionStrategy" value="ROUND_ROBIN">
+                <div class="strategy-icon">👥</div>
+                <div class="strategy-info">
+                  <strong>Team Round-Robin</strong>
+                  <span>Distribute appointments evenly across all active team members</span>
+                </div>
+              </label>
+            </div>
+
+            <!-- Target User Selector (Visible only when DIRECT is selected) -->
+            <div id="targetUserWrapper" class="mt-3">
+              <label class="form-label">Destination Counselor</label>
+              <select id="modalTargetUserSelect" class="form-select modal-select"></select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Fields & Safeguards -->
+        <div class="form-section">
+          <div class="section-badge">3</div>
+          <div class="section-body">
+            <label class="form-label">Fields to Reassign</label>
+            <div class="checkbox-group">
+              <label class="checkbox-pill">
+                <input type="checkbox" id="fieldAssignee" checked>
+                <span>Assignee Role</span>
+              </label>
+              <label class="checkbox-pill">
+                <input type="checkbox" id="fieldCoach" checked>
+                <span>Coach Role</span>
+              </label>
+              <label class="checkbox-pill">
+                <input type="checkbox" id="fieldPcOps" checked>
+                <span>PC Ops Role</span>
+              </label>
+            </div>
+
+            <label class="form-label mt-3">Safety Safeguards & Filters</label>
+            <div class="checkbox-group vertical">
+              <label class="checkbox-label">
+                <input type="checkbox" id="modalExcludeActiveCalls" checked>
+                <span><strong>Exclude Active Ongoing Calls</strong> (Prevents disconnecting live patient counseling)</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="modalOnlyPendingConfirmed" checked>
+                <span>Exclude Completed & Cancelled appointments</span>
+              </label>
+            </div>
+
+            <div class="mt-3">
+              <label class="form-label">Reassignment Reason / Transfer Note (Audit Trail)</label>
+              <input type="text" id="modalReassignReason" class="form-input" placeholder="e.g. Department transfer / handoff to Dr. Sharma">
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Impact Preview Box -->
+        <div class="preview-box" id="modalPreviewBox">
+          <div class="preview-header">
+            <span class="preview-icon">🔍</span>
+            <strong>Impact Assessment Preview</strong>
+          </div>
+          <div class="preview-metrics">
+            <div class="metric-item">
+              <span class="metric-val" id="previewEligibleCount">0</span>
+              <span class="metric-label">Appointments to Transfer</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-val text-warning" id="previewExcludedCount">0</span>
+              <span class="metric-label">Active Calls Protected</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-val text-success" id="previewTargetName">-</span>
+              <span class="metric-label">Target Assignee</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Progress Container (Visible during execution) -->
+        <div class="job-progress-container" id="jobProgressContainer" style="display: none;">
+          <div class="progress-header">
+            <span id="jobProgressStatusText">Processing Batch Reassignment in chunks...</span>
+            <span id="jobProgressPercentText">0%</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="jobProgressBarFill"></div>
+          </div>
+          <div class="progress-footer-stats">
+            <span id="jobProcessedStats">0 / 0 processed</span>
+            <span class="live-dot-pulse">● Live Batch Transaction</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="cancelBulkModalBtn">Cancel</button>
+        <button class="btn btn-primary" id="executeBulkBtn">
+          Confirm & Execute Reassignment
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add Revenue Split -->
+  <div class="modal-backdrop" id="revenueSplitModalBackdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <div class="modal-icon-badge" style="background: #ecfdf5; color: #059669;">💰</div>
+          <div>
+            <h2 class="modal-title">Add Revenue Split</h2>
+            <p class="modal-subtitle">Configure partner, counselor, and platform payout distribution</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="closeRevenueModalBtn">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Target Appointment Selector -->
+        <div class="form-section">
+          <div class="section-badge">1</div>
+          <div class="section-body">
+            <label class="form-label">Selected Appointment / Order</label>
+            <select id="revenueOrderSelect" class="form-select modal-select"></select>
+          </div>
+        </div>
+
+        <!-- Total Revenue Amount -->
+        <div class="form-section">
+          <div class="section-badge">2</div>
+          <div class="section-body">
+            <label class="form-label">Total Order / Consultation Fee (₹)</label>
+            <div style="display: flex; gap: 12px; align-items: center;">
+              <input type="number" id="revenueTotalAmount" class="form-input" style="font-size: 16px; font-weight: 700; max-width: 200px;" value="2999" min="0" step="1">
+              <span style="font-size: 13px; color: var(--text-secondary);">INR per appointment</span>
+            </div>
+
+            <!-- Quick Split Presets -->
+            <label class="form-label mt-3">Quick Preset Distribution</label>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button type="button" class="btn btn-sm btn-outline preset-btn" data-counselor="40" data-coach="40" data-platform="20">Standard (40% / 40% / 20%)</button>
+              <button type="button" class="btn btn-sm btn-outline preset-btn" data-counselor="20" data-coach="60" data-platform="20">Doctor Focus (20% / 60% / 20%)</button>
+              <button type="button" class="btn btn-sm btn-outline preset-btn" data-counselor="70" data-coach="0" data-platform="30">Counselor Focus (70% / 0% / 30%)</button>
+              <button type="button" class="btn btn-sm btn-outline preset-btn" data-counselor="50" data-coach="0" data-platform="50">50-50 Split</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stakeholders Split Sliders -->
+        <div class="form-section">
+          <div class="section-badge">3</div>
+          <div class="section-body">
+            <label class="form-label">Stakeholder Revenue Allocation</label>
+            
+            <!-- Counselor Share -->
+            <div class="split-slider-card">
+              <div class="split-card-top">
+                <div class="split-stakeholder-name">
+                  <span class="avatar-header" style="width: 24px; height: 24px; font-size: 10px;">SS</span>
+                  <strong id="splitCounselorName">Sonu Singh (Counselor)</strong>
+                </div>
+                <div class="split-calculated-val">
+                  <span id="splitCounselorPctText">40%</span> &bull; <strong id="splitCounselorAmtText">₹1,200</strong>
+                </div>
+              </div>
+              <input type="range" id="splitCounselorRange" min="0" max="100" value="40" class="split-range-input">
+            </div>
+
+            <!-- Doctor / Coach Share -->
+            <div class="split-slider-card mt-3">
+              <div class="split-card-top">
+                <div class="split-stakeholder-name">
+                  <span class="avatar-header" style="width: 24px; height: 24px; font-size: 10px; background: #fee2e2; color: #b91c1c;">DR</span>
+                  <strong id="splitCoachName">Dr. S. Sharma (Coach / Doctor)</strong>
+                </div>
+                <div class="split-calculated-val">
+                  <span id="splitCoachPctText">40%</span> &bull; <strong id="splitCoachAmtText">₹1,200</strong>
+                </div>
+              </div>
+              <input type="range" id="splitCoachRange" min="0" max="100" value="40" class="split-range-input">
+            </div>
+
+            <!-- ZenOnco Care Platform / Ops Share -->
+            <div class="split-slider-card mt-3">
+              <div class="split-card-top">
+                <div class="split-stakeholder-name">
+                  <span class="avatar-header" style="width: 24px; height: 24px; font-size: 10px; background: #ecfdf5; color: #059669;">ZO</span>
+                  <strong>ZenOnco Platform & Ops Care</strong>
+                </div>
+                <div class="split-calculated-val">
+                  <span id="splitPlatformPctText">20%</span> &bull; <strong id="splitPlatformAmtText">₹599</strong>
+                </div>
+              </div>
+              <input type="range" id="splitPlatformRange" min="0" max="100" value="20" class="split-range-input">
+            </div>
+
+            <!-- Visual Allocation Progress Bar -->
+            <div class="mt-3">
+              <div class="split-bar-visual">
+                <div class="split-bar-seg bg-blue" id="splitBarCounselor" style="width: 40%;" title="Counselor 40%"></div>
+                <div class="split-bar-seg bg-red" id="splitBarCoach" style="width: 40%;" title="Doctor 40%"></div>
+                <div class="split-bar-seg bg-green" id="splitBarPlatform" style="width: 20%;" title="Platform 20%"></div>
+              </div>
+              <div class="split-total-summary">
+                <span>Total Allocated: <strong id="splitTotalPctSum">100%</strong></span>
+                <span id="splitValidationStatus" class="text-success">✓ Total matches 100% (₹2,999)</span>
+              </div>
+            </div>
+
+            <div class="mt-3">
+              <label class="form-label">Notes / Revenue Agreement Reference</label>
+              <input type="text" id="splitNotesInput" class="form-input" placeholder="e.g. Standard 40-40-20 Onco Care Consultation Agreement">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="cancelRevenueModalBtn">Cancel</button>
+        <button class="btn btn-primary" id="saveRevenueSplitBtn" style="background: #059669; border-color: #059669;">
+          Save & Apply Revenue Split
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Call Quick Widget -->
+  <div class="floating-call-widget">
+    <div class="call-btn-circle" title="Load Next Patient Call">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.21c1.12.45 2.33.69 3.48.69a1 1 0 011 1v3.5a1 1 0 01-1 1C10.29 22 2 13.71 2 3.5a1 1 0 011-1H6.5a1 1 0 011 1c0 1.15.24 2.36.69 3.48a1 1 0 01-.21 1.11l-2.2 2.2z"/></svg>
+      <span>Load Call</span>
+    </div>
+    <div class="next-btn-pill">
+      <span>📞 Next</span>
+      <span class="scan-icon">⛶</span>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Scripts -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
